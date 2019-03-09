@@ -51,12 +51,12 @@ This configuration will expose the SOCKS5 port to your local machine. You should
 ### Advanced configuration
 For relay modes the config needs to be adjusted. You can mount your own config file to `/etc/tor/torrc.config`.  
 
-Replace `<yourEmail>` with a contact mail address. In case something is wrong with your node you will be contacted there. You might want to obscure the mail because it will be displayed and indexed in plain text by search engines.
+Replace `<yourEmail>` with a contact mail address. In case something is wrong with your node you will be contacted there. You might want to obscure it because it will be displayed and indexed in plain text by search engines.
 
-Replace `<yourNickName>` with a nickname of your choice. You and others will be able to find the node with this name. This is helpful when you don't want to remember the fingerprint of your server when searching for it.
+Replace `<yourNickName>` with a nickname of your choice. You and others will be able to find the node with this name. This is helpful when searching for your node.
 
 #### Bridge configuration
-A tor brige is a not publically listed relay. It works like a normal relay but is especially suitable for situations when public tor relays are blocked in some way.
+A tor brige is a not publically listed middle relay. It works like a normal middle relay but is especially suitable for situations when public tor relays are blocked in some way by ISPs or governments.
 
 ```
 ORPort 9001
@@ -78,7 +78,7 @@ ports:
 ```
 
 #### Middle relay
-A middle relay is one of the first few relay traffic flows through. Due to the nature of Tor it is considered safe to host a middle relay. After some time your relay will also become available as a entry node if it is considered stable. Entry guards are a sensitive point in the Tor network as they are seeing the blank IPs of their users. You can read more about that [here](https://blog.torproject.org/lifecycle-new-relay). Most hosters are agreeing on providing a Tor relay on your server. 
+A middle relay is one of the first few relays traffic flows through. Due to the nature of Tor it is considered legally safe to host a middle relay because you are not able to look inside the packages (and therefore can't log them). After some time your relay will also become available as a entry node if it is considered stable. Entry guards are a sensitive point in the Tor network as they are seeing the blank IPs of their users. You can read more about that [here](https://blog.torproject.org/lifecycle-new-relay). Most hosters are agreeing on providing a Tor relay on your server. 
 
 ```
 ORPort 9001
@@ -99,7 +99,7 @@ ports:
 ```
 
 #### Exit relay
-An exit relay is the last point where traffic is running through. In exit mode your server will reach out into the internet, forwarding the original request of the user. This also means that possible law enforcement will just see your server accessing these resources. A lot of hosters are prohibiting/blocking exit relays because they fear prosecution. Before running an exit relay make sure to contact your hoster about his opinion to exit relays.
+An exit relay is the last point where traffic is running through. In exit mode your server will reach out to the internet, forwarding the original request of the user. This also means that law enforcement or ISPs will just see your server accessing these resources. A lot of hosters are prohibiting/blocking exit relays because they fear prosecution. Before running an exit relay make sure to contact your hoster about his opinion to exit relays.
 
 This sample configuration is using a reduced exit policy list. This limits the number of ports that can be used your node as an exit relay.
 ```
