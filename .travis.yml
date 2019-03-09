@@ -26,7 +26,6 @@ script:
 
 deploy:
   provider: script
-  script: docker push $TRAVIS_REPO_SLUG:$VERSION && docker push $TRAVIS_REPO_SLUG:latest
+  script: if $VERSION -ne $DOCKER_VERSION; then docker push $TRAVIS_REPO_SLUG:$VERSION && docker push $TRAVIS_REPO_SLUG:latest; else echo Skipping deploy because version matches; fi
   on:
     branch: master
-
