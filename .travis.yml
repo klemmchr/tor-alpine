@@ -1,23 +1,35 @@
+env:
+  global:
+  - secure: dMXiCa6snChePSEmMzLpi2HexhBTRpXYDcIARFX3hTxTnj1lu+9Etk6J7iMrcAnFuagmAQyTAHgY/aowWiuMHUEbNRZoeybQwvA2Vt2cUVneq/P1MzujPDoukEOJEXbrcTN614wsIsVx9VbmCFGrzDYC/2LvvcTgW5kD3Xj6zJxwIGcMzjMbsACPvThRMeLg7PnhGrw0vHU+cNQk7/fXNTGdOY1bZKlfUqWO1K91DOxjlY+Uhnkqyx1Qo+1W4MFsZjy+SeeAo6C2JHHIvHZIty+dNscIXUOM9LKqYHMyDF7uxUqZitETadgd2zfAkQTyonxFIQiYDSM34t5Zdr6MnPJRWQBpuAafoF6B27RIkLpDcuuTh5osSM3uWvqUiTsKrZ/7GePW7YNZC8hhdKbJRxFPhlKmVMFZ6iUb/9u9fYXc+pWpIqoHGZ6IGXCH8nCOd3izeMtl12KlVYfWO/v4ypixDZDU21fMibv+GAqS9d4oog+RftAWIU1DtaJ/BpUnt8K8LEzO6CmWdsmHFYyOugCIGa2TnxYLdOHcTovrOis8h9rwrVje7F0xUg7pxIH5gTgtYIBQyRqSZHAm5Lg2HFZuuI4k+YM0hQr4/zMJ7BUtOHajZaAYP37TJXoYO9/vKdBVE4b/jL1CkKusI0L0EMzocUddMKy8dFJM3QdQzrU=
+  - secure: C3MozuNrxWkBjwm37K8NPGnSx3esiDk4KqG4vSuqd/M9YDnLrGmyll+0pkDPzhnZrAfLOZvnm2tKZ/Y5FulZzpQ4v0OZcrpdkPje1ePt/qjQqqq3I+FmV2VlX2ybifm77yrc/YZyIBv/3N2BNvg8/3Is9nJ3LRlAKvSmyoPRLWNAX/oHmIOg++NpmXBrynTUH3yxOuyz/7sMTdYEsXa3RnQ1sWYpmuVJALjYp/LdpYHUNVPC5kctdCpzxq6M9gyheyf4CwP41SNxA5J3DmfW6b72RPd9QklYHcCWZv4Qz5ARguBF8GNDz3IC9Y+1C8HzJD+ipdrV7XFDSPEDh9Fop1gdAEHWZ21RCQZT9uuOjr557g6bOcLNUD190aYl6x1S06vv1kno6GpFFheFizH/Aom2DhU6VzyuC+nZ1PiBb7+SaMlWbNbRN7gqB/zW2S5mNowfd4i+B+65Z3gheaoTCRaD7W6VET1l6OMQ179zYLbeEwiqDzfdP7G8EVSArBxRZjHdsUHAcjuPK6iqN16/CcLoYfSPePjYGrpXwtGUeOfnAaxyYFPLZYTC0Ng+APB3BIVkH5HOaIMUH8Aw2w3HRtYVMMFG2daS0WKsGcYhZABgagmnVpgnajZ1IO4JM6qjrVZccZBGh1gsKklAb9kXW17I0jAiSLjpBuG0pXioVVM=
+
 git:
   depth: false
+
 language: bash
+
 services:
 - docker
+
 before_script:
 - docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
+- sudo apt update
+- sudo apt install jq
+- export TOKEN=$(curl -s -H "Content-Type: application/json" -X POST -d '{"username": "'${DOCKER_USERNAME}'", "password": "'${DOCKER_PASSWORD}'"}' https://hub.docker.com/v2/users/login/ | jq -r .token)
+- export DOCKER_VERSION=$(curl -s -H "Authorization: JWT ${TOKEN}" https://hub.docker.com/v2/repositories/$TRAVIS_REPO_SLUG/tags/?page_size=2 | jq -r '.results|.[]|.name' | tail -n1)
 - export VERSION=$(docker run --rm alpine:latest /bin/sh -c "apk update --repository
   http://dl-4.alpinelinux.org/alpine/edge/community/ && apk --update --allow-untrusted
   --repository http://dl-4.alpinelinux.org/alpine/edge/community/ info -d tor | grep
   tor | head -1 | sed -e 's/tor-//' |  sed -e 's/ description://'" | tail -n1)
+- echo $DOCKER_VERSION
 - echo $VERSION
+
 script:
 - docker build -t $TRAVIS_REPO_SLUG:latest -t $TRAVIS_REPO_SLUG:$VERSION .
+
 deploy:
   provider: script
   script: docker push $TRAVIS_REPO_SLUG:$VERSION && docker push $TRAVIS_REPO_SLUG:latest
   on:
     branch: master
-env:
-  global:
-  - secure: dMXiCa6snChePSEmMzLpi2HexhBTRpXYDcIARFX3hTxTnj1lu+9Etk6J7iMrcAnFuagmAQyTAHgY/aowWiuMHUEbNRZoeybQwvA2Vt2cUVneq/P1MzujPDoukEOJEXbrcTN614wsIsVx9VbmCFGrzDYC/2LvvcTgW5kD3Xj6zJxwIGcMzjMbsACPvThRMeLg7PnhGrw0vHU+cNQk7/fXNTGdOY1bZKlfUqWO1K91DOxjlY+Uhnkqyx1Qo+1W4MFsZjy+SeeAo6C2JHHIvHZIty+dNscIXUOM9LKqYHMyDF7uxUqZitETadgd2zfAkQTyonxFIQiYDSM34t5Zdr6MnPJRWQBpuAafoF6B27RIkLpDcuuTh5osSM3uWvqUiTsKrZ/7GePW7YNZC8hhdKbJRxFPhlKmVMFZ6iUb/9u9fYXc+pWpIqoHGZ6IGXCH8nCOd3izeMtl12KlVYfWO/v4ypixDZDU21fMibv+GAqS9d4oog+RftAWIU1DtaJ/BpUnt8K8LEzO6CmWdsmHFYyOugCIGa2TnxYLdOHcTovrOis8h9rwrVje7F0xUg7pxIH5gTgtYIBQyRqSZHAm5Lg2HFZuuI4k+YM0hQr4/zMJ7BUtOHajZaAYP37TJXoYO9/vKdBVE4b/jL1CkKusI0L0EMzocUddMKy8dFJM3QdQzrU=
-  - secure: C3MozuNrxWkBjwm37K8NPGnSx3esiDk4KqG4vSuqd/M9YDnLrGmyll+0pkDPzhnZrAfLOZvnm2tKZ/Y5FulZzpQ4v0OZcrpdkPje1ePt/qjQqqq3I+FmV2VlX2ybifm77yrc/YZyIBv/3N2BNvg8/3Is9nJ3LRlAKvSmyoPRLWNAX/oHmIOg++NpmXBrynTUH3yxOuyz/7sMTdYEsXa3RnQ1sWYpmuVJALjYp/LdpYHUNVPC5kctdCpzxq6M9gyheyf4CwP41SNxA5J3DmfW6b72RPd9QklYHcCWZv4Qz5ARguBF8GNDz3IC9Y+1C8HzJD+ipdrV7XFDSPEDh9Fop1gdAEHWZ21RCQZT9uuOjr557g6bOcLNUD190aYl6x1S06vv1kno6GpFFheFizH/Aom2DhU6VzyuC+nZ1PiBb7+SaMlWbNbRN7gqB/zW2S5mNowfd4i+B+65Z3gheaoTCRaD7W6VET1l6OMQ179zYLbeEwiqDzfdP7G8EVSArBxRZjHdsUHAcjuPK6iqN16/CcLoYfSPePjYGrpXwtGUeOfnAaxyYFPLZYTC0Ng+APB3BIVkH5HOaIMUH8Aw2w3HRtYVMMFG2daS0WKsGcYhZABgagmnVpgnajZ1IO4JM6qjrVZccZBGh1gsKklAb9kXW17I0jAiSLjpBuG0pXioVVM=
+
