@@ -1,0 +1,25 @@
+env:
+  global:
+  - secure: R4k8tBOWgvJQD0rv2Uxr6qHxyFdS2HdUghxPiiUfMqxFxkuaqn2DQKDUBIOWCEGKBj1sdoYNZviWv50EMEHTOKX9imUoPwglRhXXZORzvH6TkYCx6dkYo/yXoQYw8umsnU24lfkqyEbTNgjmIAExOUWgI1/k++6DQOZd8zw3tY7ciOYaRrfGrX/JTn/tkdnOIqL139Of5AYF5l3chUmoDDqAZaWPvNQQAQfnG3TS69fRfO9TP4AlXYU7XDfBEpZ1wtlFx5Iz1NeVYeRvxz2Gg2RcAlK2UEj3Ad+Rfxt6y6O3fEjKstP/5vdg0W/BoUDeIJ6MUfKAkbjeM25yVVXacbnUo410E9NT7hYwKWNjx6ydSVlbhlbGblcX1f0loRQK/GNnwDqw8T/EHRve6urDmgXRDh7NC8GPJ60YPQnvKxMSdB96NSDdK4cj/SkFA1aLhvMdlrCCBIYW3hjNDvrBp42bl62up5bVVlYa8t+fg0e6gillUBwLffOmNHFHAJJT+PAeLGvm0V+REB6VwZnA6N25rV7TulYJh4HxehEjlH3cyHHXsdwj7er7uIJ7qeCmCetwJ2Jtdd4Tf7zd0SZgd2AD0OS0+8l566qJGzKwy+2DLJPNjyUl8uc9g/RPD7xgpjjTMXPV23LJxM+GA89bMNXzvWDp+/76Ms/D3qmEnZA=
+  - secure: hSm2gjxjUzxu3C3HG13LsAK4Uen+R48zwKs0qwdga4mHhm1niYMcHlgUjOTgjWs6bPqvaZaIlqI6AACm1b1sfZVv45+HZFhh97267ZuSgpThX2gbQkRxxS7lSqkTOy5tpsr1lAWkiv0EEX7f+uDgsP89Vtv+nsj7wIplNFyXj8OdEjF6kVYg1e7HyCdUJXdu0ChPfhdNMJonspwiD7c7UAtvb9t1UIi49K4rusnxxi39tDMv6WiSauvvmU7C4djUdGOcjpRRsARqu1GSgW+qlJI/6xT0z35p/X4e0DGYExfP64Xkzv0cFhg+owwgu1gJ8iyFOn9sNsyKfZX6NBgorh9CdWDfiKB34G0YmY2nq4PEXqSSUFpcfJdUg0dFHz/mCFV7EQc76Uh3Af8IGv8o+ZR+tkLFgrI8eYhzXw0qPzNSea6n4pF6rHWzksRLUUDhhwMGtVdephaFg2frhJUKYJhDXkuDtqpoWhE7QGfKK66gngNX5yheKid8ukJOhavu3ipYQkYjczgEWWgSRH+PLJ+WuvOoCW3D8X5ikhwlFMGxqSrD9a3w5Pb5bFeqJQuzFj/YrGirZW8VQh4Kke3AbQeC5wAOLk29fc+DJEo0MgOvSQt2tUQE6BWcwviyXCu94gA7jErdf+lhmw+bc5Sn2Y5dc0ieYwTLhlmaH5kbUFk=
+
+git:
+  depth: false
+language: bash
+
+services:
+  - docker
+
+before_script:
+  - docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
+  - export VERSION=$(docker run --rm alpine:latest /bin/sh -c "apk update --repository http://dl-4.alpinelinux.org/alpine/edge/community/ && apk --update --allow-untrusted --repository http://dl-4.alpinelinux.org/alpine/edge/community/ info -d tor | grep tor | head -1 | sed -e 's/tor-//' |  sed -e 's/ description://'" | tail -n1)
+  - echo $VERSION
+  
+script:
+  - docker build -t $TRAVIS_REPO_SLUG:latest -t $TRAVIS_REPO_SLUG:$VERSION .
+
+deploy:
+  provider: script
+  script: docker push $TRAVIS_REPO_SLUG:$VERSION && docker push $TRAVIS_REPO_SLUG:latest
+  on:
+    branch: master
