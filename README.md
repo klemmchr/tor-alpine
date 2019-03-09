@@ -1,5 +1,10 @@
 # tor-alpine
-[![Build Status](https://travis-ci.org/chris579/tor-alpine.svg?branch=master)](https://travis-ci.org/chris579/tor-alpine) [![](https://images.microbadger.com/badges/version/chris579/tor-alpine.svg)](https://hub.docker.com/r/chris579/tor-alpine) [![](https://images.microbadger.com/badges/image/chris579/tor-alpine.svg)](https://microbadger.com/images/chris579/tor-alpine "Get your own image badge on microbadger.com") ![https://hub.docker.com/r/chris579/tor-alpine](https://img.shields.io/docker/pulls/chris579/tor-alpine.svg) ![https://hub.docker.com/r/chris579/tor-alpine](https://img.shields.io/docker/stars/chris579/tor-alpine.svg) ![https://github.com/chris579/tor-alpine/blob/master/LICENSE](https://img.shields.io/github/license/chris579/tor-alpine.svg)
+[![Build Status](https://travis-ci.org/chris579/tor-alpine.svg?branch=master)](https://travis-ci.org/chris579/tor-alpine)
+[![](https://images.microbadger.com/badges/version/chris579/tor-alpine.svg)](https://hub.docker.com/r/chris579/tor-alpine)
+[![](https://images.microbadger.com/badges/image/chris579/tor-alpine.svg)](https://microbadger.com/images/chris579/tor-alpine "Get your own image badge on microbadger.com")
+[![](https://img.shields.io/docker/pulls/chris579/tor-alpine.svg)](https://hub.docker.com/r/chris579/tor-alpine)
+[![](https://img.shields.io/docker/stars/chris579/tor-alpine.svg)](https://hub.docker.com/r/chris579/tor-alpine)
+[![](https://img.shields.io/github/license/chris579/tor-alpine.svg)](https://github.com/chris579/tor-alpine/blob/master/LICENSE)
 
 Simple, minimal and self updating docker image for Tor based on Alpine Linux.  
 This image comes predefined for hidden service modes with SOCKS5 but can be configured easily to run as a bridge, relay or exit node. You can find example configs for that [here](#Advanced-Configuration).
