@@ -17,9 +17,7 @@ before_script:
 - sudo apt install jq
 - "export TOKEN=$(curl -s -H \"Content-Type: application/json\" -X POST -d '{\"username\": \"'${DOCKER_USERNAME}'\", \"password\": \"'${DOCKER_PASSWORD}'\"}' https://hub.docker.com/v2/users/login/ | jq -r .token)"
 - "export DOCKER_VERSION=$(curl -s -H \"Authorization: JWT ${TOKEN}\" https://hub.docker.com/v2/repositories/$TRAVIS_REPO_SLUG/tags/?page_size=2 | jq -r '.results|.[]|.name' | tail -n1)"
-- export DOCKER_VERSION="'$DOCKER_VERSION'"
 - export VERSION=$(docker run --rm alpine:latest /bin/sh -c "apk update --repository http://dl-4.alpinelinux.org/alpine/edge/community/ && apk --update --allow-untrusted --repository http://dl-4.alpinelinux.org/alpine/edge/community/ info -d tor | grep tor | head -1 | sed -e 's/tor-//' |  sed -e 's/ description://'" | tail -n1)
-- export VERSION="'$VERSION'"
 - echo $DOCKER_VERSION
 - echo $VERSION
 
@@ -28,6 +26,6 @@ script:
 
 deploy:
   provider: script
-  script: if [ $VERSION == $DOCKER_VERSION ]; then echo Skipping deploy because version matches; else docker push $TRAVIS_REPO_SLUG:$VERSION && docker push $TRAVIS_REPO_SLUG:latest; fi
+  script: if [ "'$VERSION'" == "'$DOCKER_VERSION'" ]; then echo Skipping deploy because version matches; else docker push $TRAVIS_REPO_SLUG:$VERSION && docker push $TRAVIS_REPO_SLUG:latest; fi
   on:
     branch: master
