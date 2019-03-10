@@ -36,10 +36,10 @@ before_script:
 - echo $VERSION_3
 
 script:
-- docker build -t $TRAVIS_REPO_SLUG:latest -t $TRAVIS_REPO_SLUG:$VERSION .
+- docker build -t $TRAVIS_REPO_SLUG:latest -t $TRAVIS_REPO_SLUG:$VERSION_1 -t $TRAVIS_REPO_SLUG:$VERSION_2 -t $TRAVIS_REPO_SLUG:$VERSION_3 .
 
 deploy:
   provider: script
-  script: if [ "'$VERSION'" = "'$DOCKER_VERSION'" ]; then echo Skipping deploy because version matches; else docker push $TRAVIS_REPO_SLUG:$VERSION && docker push $TRAVIS_REPO_SLUG:latest; fi
+  script: if [ "'$VERSION'" = "'$DOCKER_VERSION'" ]; then echo Skipping deploy because version matches; else docker push $TRAVIS_REPO_SLUG:$VERSION_1 && docker push $TRAVIS_REPO_SLUG:$VERSION_2 && docker push $TRAVIS_REPO_SLUG:$VERSION_3 && docker push $TRAVIS_REPO_SLUG:latest; fi
   on:
     branch: master
