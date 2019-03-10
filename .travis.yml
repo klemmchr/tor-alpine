@@ -20,6 +20,20 @@ before_script:
 - export VERSION=$(docker run --rm alpine:latest /bin/sh -c "apk update --repository http://dl-4.alpinelinux.org/alpine/edge/community/ && apk --update --allow-untrusted --repository http://dl-4.alpinelinux.org/alpine/edge/community/ info -d tor | grep tor | head -1 | sed -e 's/tor-//' |  sed -e 's/ description://'" | tail -n1)
 - echo $DOCKER_VERSION
 - echo $VERSION
+- export VERSION_MAJOR=$(echo $VERSION | cut -d'.' -f1)
+- echo $VERSION_MAJOR
+- export VERSION_MINOR=$(echo $VERSION | cut -d'.' -f2)
+- echo $VERSION_MINOR
+- export VERSION_PATCH=$(echo $VERSION | cut -d'.' -f3)
+- echo $VERSION_PATCH
+- export VERSION_REVISION=$(echo $VERSION | cut -d'.' -f4)
+- echo $VERSION_REVISION
+- export VERSION_1=$(echo $VERSION_MAJOR.$VERSION_MINOR)
+- echo $VERSION_1
+- export VERSION_2=$(echo $VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH)
+- echo $VERSION_2
+- export VERSION_3=$(echo $VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_REVISION)
+- echo $VERSION_3
 
 script:
 - docker build -t $TRAVIS_REPO_SLUG:latest -t $TRAVIS_REPO_SLUG:$VERSION .
