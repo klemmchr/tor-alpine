@@ -42,16 +42,20 @@ jobs:
         echo $VERSION_REVISION &&
         export VERSION_1=$(echo $VERSION_MAJOR.$VERSION_MINOR) &&
         echo $VERSION_1 &&
+        echo $VERSION_1 > $HOME/version_1.txt &&
         export VERSION_2=$(echo $VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH) &&
         echo $VERSION_2 &&
+        echo $VERSION_2 > $HOME/version_2.txt &&        
         export VERSION_3=$(echo $VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_REVISION) &&
-        echo $VERSION_3
+        echo $VERSION_3 &&
+        echo $VERSION_3 > $HOME/version_3.txt
         
     - name: Build docker image
       run: >
-        DOCKERHUB_VERSION=$(<$HOME/dockerhub_version.txt) &&
-        echo $DOCKERHUB_VERSION &&
+        VERSION_1=$(<$HOME/version_1.txt) &&
         echo $VERSION_1 &&
+        VERSION_2=$(<$HOME/version_2.txt) &&
         echo $VERSION_2 &&
+        VERSION_3=$(<$HOME/version_3.txt) &&
         echo $VERSION_3 &&
         docker build -t ${GITHUB_REPOSITORY}:latest -t ${GITHUB_REPOSITORY}:${VERSION_1} -t ${GITHUB_REPOSITORY}:${VERSION_2} -t ${GITHUB_REPOSITORY}:${VERSION_3} .
