@@ -1,5 +1,5 @@
 # tor-alpine
-[![Build Status](https://travis-ci.org/chris579/tor-alpine.svg?branch=master)](https://travis-ci.org/chris579/tor-alpine)
+[![Actions Status](https://github.com/chris579/tor-alpine/workflows/Docker%20Image%20CI/badge.svg)](https://github.com/chris579/tor-alpine/actions)
 [![](https://images.microbadger.com/badges/version/chris579/tor-alpine.svg)](https://hub.docker.com/r/chris579/tor-alpine)
 [![](https://images.microbadger.com/badges/image/chris579/tor-alpine.svg)](https://microbadger.com/images/chris579/tor-alpine "Get your own image badge on microbadger.com")
 [![](https://img.shields.io/docker/pulls/chris579/tor-alpine.svg)](https://hub.docker.com/r/chris579/tor-alpine)
