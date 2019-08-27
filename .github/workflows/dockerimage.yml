@@ -11,6 +11,6 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Docker login
-      run: docker login --username ${{ DOCKER_USERNAME }} --password ${{ DOCKER_PASSWORD }}
+      run: docker login --username ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
     - name: Install jq
       run: sudo apt update && sudo install jq
