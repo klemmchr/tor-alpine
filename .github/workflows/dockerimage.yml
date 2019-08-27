@@ -68,7 +68,7 @@ jobs:
         VERSION=$(<$HOME/version.txt) &&
         echo $VERSION &&
         DOCKERHUB_VERSION=$(<$HOME/dockerhub_version.txt) &&
-        echo DOCKERHUB_VERSION &&
+        echo $DOCKERHUB_VERSION &&
         VERSION_1=$(<$HOME/version_1.txt) &&
         echo $VERSION_1 &&
         VERSION_2=$(<$HOME/version_2.txt) &&
