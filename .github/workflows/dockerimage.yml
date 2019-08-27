@@ -77,8 +77,8 @@ jobs:
         echo $VERSION_3 &&
         if [ "${VERSION}" = "${DOCKER_VERSION}" ]
         then
-          echo Skipping deploy because version matches
+          echo Skipping deploy because version matches;
         else
-          echo Pushing new version
+          echo Pushing new version;
           docker push $GITHUB_REPOSITORY:$VERSION_1 && docker push $GITHUB_REPOSITORY:$VERSION_2 && docker push $GITHUB_REPOSITORY:$VERSION_3 && docker push $GITHUB_REPOSITORY:latest;
         fi
