@@ -19,9 +19,31 @@ jobs:
       run: >
         API_RESULT=$(curl -s -H \"Authorization: JWT ${TOKEN}\" https://hub.docker.com/v2/repositories/${GITHUB_REPOSITORY}/tags/?page_size=2) &&
         echo $API_RESULT &&
-        export DOCKER_VERSION=$($API_RESULT | jq -r '.results|.[]|.name' | tail -n1) &&
+        export DOCKER_VERSION=$(echo $API_RESULT | jq -r '.results|.[]|.name' | tail -n1) &&
         echo $DOCKER_VERSION
     - name: Get alpine repository image version
       run: >
-        export VERSION=$(docker run --rm alpine:latest /bin/sh -c "apk update --repository http://dl-4.alpinelinux.org/alpine/edge/community/ && apk --update --allow-untrusted --repository http://dl-4.alpinelinux.org/alpine/edge/community/ info -d tor | grep tor | head -1 | sed -e 's/tor-//' |  sed -e 's/ description://'" | tail -n1) &&
-        echo $VERSION
+        export VERSION=$(
+          docker run --rm alpine:latest /bin/sh -c "
+            apk update --repository http://dl-4.alpinelinux.org/alpine/edge/community/ &&
+            apk --update --allow-untrusted --repository http://dl-4.alpinelinux.org/alpine/edge/community/ info -d tor | grep tor | head -1 | sed -e 's/tor-//' |  sed -e 's/ description://'" | tail -n1
+        ) &&
+        echo $VERSION &&
+        VERSION_MAJOR=$(echo $VERSION | cut -d'.' -f1) &&
+        echo $VERSION_MAJOR &&
+         VERSION_MINOR=$(echo $VERSION | cut -d'.' -f2) &&
+        echo $VERSION_MINOR &&
+        VERSION_PATCH=$(echo $VERSION | cut -d'.' -f3) &&
+        echo $VERSION_PATCH &&
+        VERSION_REVISION=$(echo $VERSION | cut -d'.' -f4) &&
+        echo $VERSION_REVISION &&
+        export VERSION_1=$(echo $VERSION_MAJOR.$VERSION_MINOR) &&
+        echo $VERSION_1 &&
+        export VERSION_2=$(echo $VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH) &&
+        echo $VERSION_2 &&
+        export VERSION_3=$(echo $VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_REVISION) &&
+        echo $VERSION_3
+        
+    - name: Build docker image
+      run: >
+        docker build -t ${GITHUB_REPOSITORY}:latest -t ${GITHUB_REPOSITORY}:$VERSION_1 -t ${GITHUB_REPOSITORY}:$VERSION_2 -t ${GITHUB_REPOSITORY}:$VERSION_3 .
