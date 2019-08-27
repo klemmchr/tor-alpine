@@ -1,0 +1,16 @@
+name: Docker Image CI
+
+on: [push]
+
+jobs:
+
+  build:
+ 
+    runs-on: ubuntu-latest
+ 
+    steps:
+    - uses: actions/checkout@v1
+    - name: Docker login
+      run: docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
+    - name: Install jq
+      run: sudo apt update && sudo install jq
