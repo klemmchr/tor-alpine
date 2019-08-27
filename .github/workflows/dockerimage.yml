@@ -30,7 +30,7 @@ jobs:
             apk --update --allow-untrusted --repository http://dl-4.alpinelinux.org/alpine/edge/community/ info -d tor | grep tor | head -1 | sed -e 's/tor-//' |  sed -e 's/ description://'" | tail -n1
         ) &&
         echo $VERSION &&
-        echo $VERSION > $HOME/version.txt
+        echo $VERSION > $HOME/version.txt &&
         export VERSION_MAJOR=$(echo $VERSION | cut -d'.' -f1) &&
         echo $VERSION_MAJOR &&
         export VERSION_MINOR=$(echo $VERSION | cut -d'.' -f2) &&
