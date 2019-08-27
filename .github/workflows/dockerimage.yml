@@ -68,11 +68,11 @@ jobs:
         VERSION=$(<$HOME/version.txt) &&
         echo $VERSION &&
         DOCKERHUB_VERSION=$(<$HOME/dockerhub_version.txt) &&
-        echo "\'${DOCKERHUB_VERSION}\'" &&
+        echo "${DOCKERHUB_VERSION}" &&
         VERSION_1=$(<$HOME/version_1.txt) &&
         echo $VERSION_1 &&
         VERSION_2=$(<$HOME/version_2.txt) &&
         echo $VERSION_2 &&
         VERSION_3=$(<$HOME/version_3.txt) &&
         echo $VERSION_3 &&
-        if [ "'${VERSION}'" = "'${DOCKER_VERSION}'" ]; then echo Skipping deploy because version matches; else docker push $GITHUB_REPOSITORY:$VERSION_1 && docker push $GITHUB_REPOSITORY:$VERSION_2 && docker push $GITHUB_REPOSITORY:$VERSION_3 && docker push $GITHUB_REPOSITORY:latest; fi
+        if [ "${VERSION}" = "${DOCKER_VERSION}" ]; then echo Skipping deploy because version matches; else docker push $GITHUB_REPOSITORY:$VERSION_1 && docker push $GITHUB_REPOSITORY:$VERSION_2 && docker push $GITHUB_REPOSITORY:$VERSION_3 && docker push $GITHUB_REPOSITORY:latest; fi
