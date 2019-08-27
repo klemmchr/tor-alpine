@@ -46,4 +46,8 @@ jobs:
         
     - name: Build docker image
       run: >
-        docker build -t ${GITHUB_REPOSITORY}:latest -t ${GITHUB_REPOSITORY}:$VERSION_1 -t ${GITHUB_REPOSITORY}:$VERSION_2 -t ${GITHUB_REPOSITORY}:$VERSION_3 .
+        echo $VERSION_1 &&
+        echo $VERSION_2 &&
+        echo $VERSION_3 &&
+        echo $GITHUB_REPOSITORY &&
+        docker build -t ${GITHUB_REPOSITORY}:latest -t ${GITHUB_REPOSITORY}:${VERSION_1} -t ${GITHUB_REPOSITORY}:${VERSION_2} -t ${GITHUB_REPOSITORY}:${VERSION_3} .
