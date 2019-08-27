@@ -14,13 +14,16 @@ jobs:
       run: docker login --username ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
     - name: Get dockerhub auth token
       run: >
-        export TOKEN=$(curl -s -H \"Content-Type: application/json\" -X POST -d '{\"username\": \"'${DOCKER_USERNAME}'\", \"password\": \"'${DOCKER_PASSWORD}'\"}' https://hub.docker.com/v2/users/login/ | jq -r .token)
+        TOKEN=$(curl -s -H \"Content-Type: application/json\" -X POST -d '{\"username\": \"'${DOCKER_USERNAME}'\", \"password\": \"'${DOCKER_PASSWORD}'\"}' https://hub.docker.com/v2/users/login/ | jq -r .token) &&
+        echo ${TOKEN} > $HOME/docker_token.txt
     - name: Get dockerhub version
       run: >
+        TOKEN=$(<$HOME/docker_token.txt) &&
         API_RESULT=$(curl -s -H \"Authorization: JWT ${TOKEN}\" https://hub.docker.com/v2/repositories/${GITHUB_REPOSITORY}/tags/?page_size=2) &&
         echo $API_RESULT &&
-        export DOCKER_VERSION=$(echo $API_RESULT | jq -r '.results|.[]|.name' | tail -n1) &&
-        echo $DOCKER_VERSION
+        export DOCKERHUB_VERSION=$(echo $API_RESULT | jq -r '.results|.[]|.name' | tail -n1) &&
+        echo $DOCKERHUB_VERSION &&
+        echo $DOCKERHUB_VERSION > $HOME/dockerhub_version.txt
     - name: Get alpine repository image version
       run: >
         export VERSION=$(
@@ -46,6 +49,8 @@ jobs:
         
     - name: Build docker image
       run: >
+        DOCKERHUB_VERSION=$(<$HOME/dockerhub_version.txt) &&
+        echo $DOCKERHUB_VERSION &&
         echo $VERSION_1 &&
         echo $VERSION_2 &&
         echo $VERSION_3 &&
