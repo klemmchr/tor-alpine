@@ -15,8 +15,9 @@ jobs:
     - name: Install jq
       run: sudo apt update && sudo apt install jq
     - name: Get dockerhub image version
-      run: "export TOKEN=$(curl -s -H \"Content-Type: application/json\" -X POST -d '{\"username\": \"'${DOCKER_USERNAME}'\", \"password\": \"'${DOCKER_PASSWORD}'\"}' https://hub.docker.com/v2/users/login/ | jq -r .token)"
-      "export DOCKER_VERSION=$(curl -s -H \"Authorization: JWT ${TOKEN}\" https://hub.docker.com/v2/repositories/$TRAVIS_REPO_SLUG/tags/?page_size=2 | jq -r '.results|.[]|.name' | tail -n1)"
-      export VERSION=$(docker run --rm alpine:latest /bin/sh -c "apk update --repository http://dl-4.alpinelinux.org/alpine/edge/community/ && apk --update --allow-untrusted --repository http://dl-4.alpinelinux.org/alpine/edge/community/ info -d tor | grep tor | head -1 | sed -e 's/tor-//' |  sed -e 's/ description://'" | tail -n1)
-      echo $DOCKER_VERSION
-      echo DOCKER_VERSION
+      run:
+        export TOKEN=$(curl -s -H \"Content-Type: application/json\" -X POST -d '{\"username\": \"'${DOCKER_USERNAME}'\", \"password\": \"'${DOCKER_PASSWORD}'\"}' https://hub.docker.com/v2/users/login/ | jq -r .token)
+        export DOCKER_VERSION=$(curl -s -H \"Authorization: JWT ${TOKEN}\" https://hub.docker.com/v2/repositories/$TRAVIS_REPO_SLUG/tags/?page_size=2 | jq -r '.results|.[]|.name' | tail -n1)
+        export VERSION=$(docker run --rm alpine:latest /bin/sh -c "apk update --repository http://dl-4.alpinelinux.org/alpine/edge/community/ && apk --update --allow-untrusted --repository http://dl-4.alpinelinux.org/alpine/edge/community/ info -d tor | grep tor | head -1 | sed -e 's/tor-//' |  sed -e 's/ description://'" | tail -n1)
+        echo $DOCKER_VERSION
+        echo $VERSION
