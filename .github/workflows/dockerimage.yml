@@ -12,18 +12,16 @@ jobs:
     - uses: actions/checkout@v1
     - name: Docker login
       run: docker login --username ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
-    - name: Install jq
-      run: sudo apt update && sudo apt install jq
     - name: Get dockerhub auth token
       run: >
         export TOKEN=$(curl -s -H \"Content-Type: application/json\" -X POST -d '{\"username\": \"'${DOCKER_USERNAME}'\", \"password\": \"'${DOCKER_PASSWORD}'\"}' https://hub.docker.com/v2/users/login/ | jq -r .token)
     - name: Get dockerhub version
       run: >
-        API_RESULT = $(curl -s -H \"Authorization: JWT ${TOKEN}\" https://hub.docker.com/v2/repositories/${GITHUB_REPOSITORY}/tags/?page_size=2) &&
+        API_RESULT=$(curl -s -H \"Authorization: JWT ${TOKEN}\" https://hub.docker.com/v2/repositories/${GITHUB_REPOSITORY}/tags/?page_size=2) &&
         echo $API_RESULT &&
         export DOCKER_VERSION=$($API_RESULT | jq -r '.results|.[]|.name' | tail -n1) &&
         echo $DOCKER_VERSION
-    - name: Get dockerhub image version
+    - name: Get alpine repository image version
       run: >
         export VERSION=$(docker run --rm alpine:latest /bin/sh -c "apk update --repository http://dl-4.alpinelinux.org/alpine/edge/community/ && apk --update --allow-untrusted --repository http://dl-4.alpinelinux.org/alpine/edge/community/ info -d tor | grep tor | head -1 | sed -e 's/tor-//' |  sed -e 's/ description://'" | tail -n1) &&
         echo $VERSION
