@@ -16,6 +16,5 @@ jobs:
       run: sudo apt update && sudo apt install jq
     - name: Get dockerhub image version
       run:
-        export VERSION=$(docker run --rm alpine:latest /bin/sh -c "apk update --repository http://dl-4.alpinelinux.org/alpine/edge/community/ && apk --update --allow-untrusted --repository http://dl-4.alpinelinux.org/alpine/edge/community/ info -d tor | grep tor | head -1 | sed -e 's/tor-//' |  sed -e 's/ description://'" | tail -n1)
-        echo $DOCKER_VERSION
+        export VERSION=$(docker run --rm alpine:latest /bin/sh -c "apk update --repository http://dl-4.alpinelinux.org/alpine/edge/community/ && apk --update --allow-untrusted --repository http://dl-4.alpinelinux.org/alpine/edge/community/ info -d tor | grep tor | head -1 | sed -e 's/tor-//' |  sed -e 's/ description://'" | tail -n1) &&
         echo $VERSION
