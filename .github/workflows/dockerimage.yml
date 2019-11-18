@@ -16,67 +16,69 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Get dockerhub auth token
-      run: >
-        TOKEN=$(curl -s -H \"Content-Type: application/json\" -X POST -d '{\"username\": \"'${DOCKER_USERNAME}'\", \"password\": \"'${DOCKER_PASSWORD}'\"}' https://hub.docker.com/v2/users/login/ | jq -r .token) &&
+      run: |
+        TOKEN=$(curl -s -H \"Content-Type: application/json\" -X POST -d '{\"username\": \"'${DOCKER_USERNAME}'\", \"password\": \"'${DOCKER_PASSWORD}'\"}' https://hub.docker.com/v2/users/login/ | jq -r .token)
         echo ${TOKEN} > $HOME/docker_token.txt
+
     - name: Get dockerhub version
-      run: >
-        TOKEN=$(<$HOME/docker_token.txt) &&
-        API_RESULT=$(curl -s -H \"Authorization: JWT ${TOKEN}\" https://hub.docker.com/v2/repositories/${GITHUB_REPOSITORY}/tags/?page_size=2) &&
-        echo $API_RESULT &&
-        export DOCKERHUB_VERSION=$(echo $API_RESULT | jq -r '.results|.[]|.name' | tail -n1) &&
-        echo $DOCKERHUB_VERSION &&
+      run: |
+        TOKEN=$(<$HOME/docker_token.txt)
+        API_RESULT=$(curl -s -H \"Authorization: JWT ${TOKEN}\" https://hub.docker.com/v2/repositories/${GITHUB_REPOSITORY}/tags/?page_size=2)
+        echo $API_RESULT
+        export DOCKERHUB_VERSION=$(echo $API_RESULT | jq -r '.results|.[]|.name' | tail -n1)
+        echo $DOCKERHUB_VERSION
         echo $DOCKERHUB_VERSION > $HOME/dockerhub_version.txt
+
     - name: Get alpine repository image version
-      run: >
+      run: |
         export VERSION=$(
           docker run --rm alpine:latest /bin/sh -c "
             apk update --repository http://dl-4.alpinelinux.org/alpine/edge/community/ &&
             apk --update --allow-untrusted --repository http://dl-4.alpinelinux.org/alpine/edge/community/ info -d tor | grep tor | head -1 | sed -e 's/tor-//' |  sed -e 's/ description://'" | tail -n1
-        ) &&
-        echo $VERSION &&
-        echo $VERSION > $HOME/version.txt &&
-        export VERSION_MAJOR=$(echo $VERSION | cut -d'.' -f1) &&
-        echo $VERSION_MAJOR &&
-        export VERSION_MINOR=$(echo $VERSION | cut -d'.' -f2) &&
-        echo $VERSION_MINOR &&
-        export VERSION_PATCH=$(echo $VERSION | cut -d'.' -f3) &&
-        echo $VERSION_PATCH &&
-        export VERSION_REVISION=$(echo $VERSION | cut -d'.' -f4) &&
-        echo $VERSION_REVISION &&
-        export VERSION_1=$(echo $VERSION_MAJOR.$VERSION_MINOR) &&
-        echo $VERSION_1 &&
-        echo $VERSION_1 > $HOME/version_1.txt &&
-        export VERSION_2=$(echo $VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH) &&
-        echo $VERSION_2 &&
-        echo $VERSION_2 > $HOME/version_2.txt &&        
-        export VERSION_3=$(echo $VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_REVISION) &&
-        echo $VERSION_3 &&
+        )
+        echo $VERSION
+        echo $VERSION > $HOME/version.txt
+        export VERSION_MAJOR=$(echo $VERSION | cut -d'.' -f1)
+        echo $VERSION_MAJOR
+        export VERSION_MINOR=$(echo $VERSION | cut -d'.' -f2)
+        echo $VERSION_MINOR
+        export VERSION_PATCH=$(echo $VERSION | cut -d'.' -f3)
+        echo $VERSION_PATCH
+        export VERSION_REVISION=$(echo $VERSION | cut -d'.' -f4)
+        echo $VERSION_REVISION
+        export VERSION_1=$(echo $VERSION_MAJOR.$VERSION_MINOR)
+        echo $VERSION_1
+        echo $VERSION_1 > $HOME/version_1.txt
+        export VERSION_2=$(echo $VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH)
+        echo $VERSION_2
+        echo $VERSION_2 > $HOME/version_2.txt
+        export VERSION_3=$(echo $VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_REVISION)
+        echo $VERSION_3
         echo $VERSION_3 > $HOME/version_3.txt
         
     - name: Build docker image
-      run: >
-        VERSION_1=$(<$HOME/version_1.txt) &&
-        echo $VERSION_1 &&
-        VERSION_2=$(<$HOME/version_2.txt) &&
-        echo $VERSION_2 &&
-        VERSION_3=$(<$HOME/version_3.txt) &&
-        echo $VERSION_3 &&
+      run: |
+        VERSION_1=$(<$HOME/version_1.txt)
+        echo $VERSION_1
+        VERSION_2=$(<$HOME/version_2.txt)
+        echo $VERSION_2
+        VERSION_3=$(<$HOME/version_3.txt)
+        echo $VERSION_3
         docker build -t ${GITHUB_REPOSITORY}:latest -t ${GITHUB_REPOSITORY}:${VERSION_1} -t ${GITHUB_REPOSITORY}:${VERSION_2} -t ${GITHUB_REPOSITORY}:${VERSION_3} .
         
     - name: Docker login
       run: docker login --username ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
       
     - name: Push image
-      run: >
-        VERSION=$(<$HOME/version.txt) &&
-        echo $VERSION &&
-        DOCKERHUB_VERSION=$(<$HOME/dockerhub_version.txt) &&
-        echo "${DOCKERHUB_VERSION}" &&
-        VERSION_1=$(<$HOME/version_1.txt) &&
-        echo $VERSION_1 &&
-        VERSION_2=$(<$HOME/version_2.txt) &&
-        echo $VERSION_2 &&
-        VERSION_3=$(<$HOME/version_3.txt) &&
-        echo $VERSION_3 &&
+      run: |
+        VERSION=$(<$HOME/version.txt)
+        echo $VERSION
+        DOCKERHUB_VERSION=$(<$HOME/dockerhub_version.txt)
+        echo "${DOCKERHUB_VERSION}"
+        VERSION_1=$(<$HOME/version_1.txt)
+        echo $VERSION_1
+        VERSION_2=$(<$HOME/version_2.txt)
+        echo $VERSION_2
+        VERSION_3=$(<$HOME/version_3.txt)
+        echo $VERSION_3
         if [ "${VERSION}" == "${DOCKERHUB_VERSION}" ]; then echo Skipping deploy because version matches; else echo Pushing new version && docker push $GITHUB_REPOSITORY:$VERSION_1 && docker push $GITHUB_REPOSITORY:$VERSION_2 && docker push $GITHUB_REPOSITORY:$VERSION_3 && docker push $GITHUB_REPOSITORY:latest; fi
