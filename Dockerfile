@@ -1,6 +1,7 @@
 FROM alpine:latest
 
 RUN apk --update --allow-untrusted --repository http://dl-4.alpinelinux.org/alpine/edge/community/ add \
+      libevent \
       tor \
       torsocks \
     && sed "1s/^/SocksPort 0.0.0.0:9050\n/" /etc/tor/torrc.sample > /etc/tor/torrc.config \  
