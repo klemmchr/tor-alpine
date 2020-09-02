@@ -65,7 +65,7 @@ jobs:
         VERSION_3=$(<$HOME/version_3.txt)
         echo $VERSION_3
         DOCKER_HUB=chris579/tor-alpine
-        docker build -t ${GITHUB_REPOSITORY}:latest -t ${DOCKER_HUB}:${VERSION_1} -t ${DOCKER_HUB}:${VERSION_2} -t ${DOCKER_HUB}:${VERSION_3} .
+        docker build -t ${DOCKER_HUB}:latest -t ${DOCKER_HUB}:${VERSION_1} -t ${DOCKER_HUB}:${VERSION_2} -t ${DOCKER_HUB}:${VERSION_3} .
         
     - name: Docker login
       run: docker login --username ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
