@@ -82,5 +82,6 @@ jobs:
         echo $VERSION_2
         VERSION_3=$(<$HOME/version_3.txt)
         echo $VERSION_3
+        echo $GITHUB_EVENT_NAME
         DOCKER_HUB=chris579/tor-alpine
-        if [ "${VERSION}" == "${DOCKERHUB_VERSION}" ]; then echo Skipping deploy because version matches; else echo Pushing new version && docker push $DOCKER_HUB:$VERSION_1 && docker push $DOCKER_HUB:$VERSION_2 && docker push $DOCKER_HUB:$VERSION_3 && docker push $DOCKER_HUB:latest; fi
+        if [ "${GITHUB_EVENT_NAME}" == "schedule" ] && [ "${VERSION}" == "${DOCKERHUB_VERSION}" ]; then echo Skipping deploy because version matches; else echo Pushing new version && docker push $DOCKER_HUB:$VERSION_1 && docker push $DOCKER_HUB:$VERSION_2 && docker push $DOCKER_HUB:$VERSION_3 && docker push $DOCKER_HUB:latest; fi
