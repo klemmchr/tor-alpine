@@ -2,9 +2,9 @@ FROM alpine:latest
 
 RUN apk --no-cache \
         --repository https://dl-cdn.alpinelinux.org/alpine/edge/community/ add \
-      libevent \
-      tor \
-      torsocks \
+        libevent \
+        tor \
+        torsocks \
     && sed "1s/^/SocksPort 0.0.0.0:9050\n/" /etc/tor/torrc.sample > /etc/tor/torrc.config \
     && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 

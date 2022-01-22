@@ -10,9 +10,9 @@ on:
 jobs:
 
   build:
- 
+
     runs-on: ubuntu-latest
- 
+
     steps:
     - uses: actions/checkout@v1
     - name: Get dockerhub auth token
@@ -33,8 +33,8 @@ jobs:
       run: |
         export VERSION=$(
           docker run --rm alpine:latest /bin/sh -c "
-            apk update --repository http://dl-4.alpinelinux.org/alpine/edge/community/ &&
-            apk --update --allow-untrusted --repository http://dl-4.alpinelinux.org/alpine/edge/community/ info -d tor | grep tor | head -1 | sed -e 's/tor-//' |  sed -e 's/ description://'" | tail -n1
+            apk update --no-cache --repository https://dl-cdn.alpinelinux.org/alpine/edge/community/ &&
+            apk --update --no-cache --repository https://dl-cdn.alpinelinux.org/alpine/edge/community/ info -d tor | grep tor | head -1 | sed -e 's/tor-//' |  sed -e 's/ description://'" | tail -n1
         )
         echo $VERSION
         echo $VERSION > $HOME/version.txt
@@ -55,7 +55,7 @@ jobs:
         export VERSION_3=$(echo $VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_REVISION)
         echo $VERSION_3
         echo $VERSION_3 > $HOME/version_3.txt
-        
+
     - name: Build docker image
       run: |
         VERSION_1=$(<$HOME/version_1.txt)
@@ -66,10 +66,10 @@ jobs:
         echo $VERSION_3
         DOCKER_HUB=chris579/tor-alpine
         docker build -t ${DOCKER_HUB}:latest -t ${DOCKER_HUB}:${VERSION_1} -t ${DOCKER_HUB}:${VERSION_2} -t ${DOCKER_HUB}:${VERSION_3} .
-        
+
     - name: Docker login
       run: docker login --username ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
-      
+
     - name: Push image
       run: |
         VERSION=$(<$HOME/version.txt)
