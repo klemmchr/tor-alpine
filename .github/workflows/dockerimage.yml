@@ -34,7 +34,8 @@ jobs:
         export VERSION=$(
           docker run --rm alpine:latest /bin/sh -c "
             apk update --no-cache --repository https://dl-cdn.alpinelinux.org/alpine/edge/community/ &&
-            apk update --no-cache --repository https://dl-cdn.alpinelinux.org/alpine/edge/community/ info -d tor | grep tor | head -1 | sed -e 's/tor-//' |  sed -e 's/ description://'" | tail -n1
+            apk --update --no-cache --repository https://dl-cdn.alpinelinux.org/alpine/edge/community/ info -d tor |
+            grep tor | head -1 | sed -e 's/tor-//' |  sed -e 's/ description://'" | tail -n1
         )
         echo $VERSION
         echo $VERSION > $HOME/version.txt
